@@ -1,18 +1,21 @@
 {
   "name": "autofill-app",
+  "homepage": "https://michaelmaffins.github.io/demo-autofill-app/",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite --port 8000",
     "build": "tsc -b && vite build",
-    "heroku-postbuild": "npm run build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dis"
   },
   "dependencies": {
     "bootstrap": "^5.3.3",
     "formik": "^2.4.6",
+    "gh-pages": "^6.3.0",
     "organisationsnummer": "^1.2.0",
     "personnummer": "^3.2.1",
     "react": "^19.0.0",
@@ -36,8 +39,5 @@
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.24.1",
     "vite": "^6.2.0"
-  },
-  "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "4.35.0"
   }
 }
