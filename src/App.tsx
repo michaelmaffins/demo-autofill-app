@@ -57,7 +57,7 @@ function App() {
 
   return (
     <div className="d-flex flex-column align-items-center">
-      <Card style={{ width: '500px' }}>
+      <Card style={{ minWidth: '350px' }}>
         <Card.Body>
           {editMode && buyerStr && (
             <div className="d-flex justify-content-end">
@@ -117,7 +117,7 @@ function App() {
       </Card>
 
       {!editMode && !!buyerParsed && (
-        <Card style={{ width: '500px' }} className="mt-4">
+        <Card style={{ minWidth: '350px' }} className="mt-4">
           <Card.Body>
             <PaymentOptions
               selectedPayment={selectedPayment}
