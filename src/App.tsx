@@ -11,6 +11,8 @@ import {
   privateValidationSchema
 } from './validation/form.validate';
 import PaymentOptions from './components/PaymentOptions';
+import AutofillV2 from './projects/autofillV2';
+import TestForm from './projects/autofillV2/Test';
 
 const buyersTypeOpt = [
   { text: 'Private', value: 'private' },
@@ -28,6 +30,7 @@ export const initPrivFormValues = {
 };
 
 function App() {
+  // return <AutofillV2 />;
   const buyerStr = localStorage.getItem('buyer');
   const buyerParsed = !!buyerStr ? JSON.parse(buyerStr) : null;
 
@@ -51,21 +54,59 @@ function App() {
   const handleDeleteBuyer = () => {
     localStorage.removeItem('buyer');
     privFormRef.current && privFormRef.current.reset();
-    corpFormRef.current && corpFormRef.current.reset();
-    window.location.reload();
+    // corpFormRef.current && corpFormRef.current.reset();
+    // window.location.reload();
   };
 
+  return <TestForm />;
+  return <AutofillV2 />;
+
+  return (
+    <Form noValidate>
+      Name: <input type="text" name="name" placeholder="Name" />
+      <br />
+      Address: <input type="text" name="address" placeholder="Address" />
+      <br />
+      City: <input type="text" name="city" placeholder="City" />
+      <br />
+      State:{' '}
+      <select name="state">
+        <option value="CA">CA</option>
+        <option value="MA">MA</option>
+        <option value="NY">NY</option>
+        <option value="MD">MD</option>
+        <option value="OR">OR</option>
+        <option value="OH">OH</option>
+        <option value="IL">IL</option>
+        <option value="DC">DC</option>
+      </select>{' '}
+      <br />
+      Zip: <input name="zip" id="form_zip" placeholder="Zip" /> <br />
+      Country: <input
+        name="country"
+        id="form_country"
+        placeholder="Country"
+      />{' '}
+      <br />
+      Company: <input
+        name="company"
+        id="form_company"
+        placeholder="company"
+      />{' '}
+      <br />
+      Email: <input name="email" id="form_email" placeholder="Email" /> <br />
+      <input type="reset" value="Reset" />
+      <input type="submit" value="Submit" id="profile_submit" />
+    </Form>
+  );
+  console.log(buyerType);
   return (
     <div className="d-flex flex-column align-items-center">
       <Card style={{ minWidth: '350px' }}>
         <Card.Body>
           {editMode && buyerStr && (
             <div className="d-flex justify-content-end">
-              <Button
-                variant="danger"
-                type="submit"
-                onClick={handleDeleteBuyer}
-              >
+              <Button variant="danger" type="reset" onClick={handleDeleteBuyer}>
                 Delete
               </Button>
             </div>
@@ -85,14 +126,24 @@ function App() {
                   value={buyersTypeOpt.find(b => b.value === buyerType)?.text}
                 />
               </Form.Group>
-              {buyerType === 'private' ? (
+
+              <div
+                style={{ display: buyerType === 'private' ? 'block' : 'none' }}
+              >
+                {' '}
                 <Private setEditMode={setEditMode} formRef={privFormRef} />
-              ) : (
-                <Corporate setEditMode={setEditMode} formRef={corpFormRef} />
-              )}
+              </div>
+              {/* <div
+                style={{ display: buyerType !== 'private' ? 'block' : 'none' }}
+              >
+                <Corporate
+                  style={{ display: buyerType !== 'private' && 'block' }}
+                  setEditMode={setEditMode}
+                  formRef={corpFormRef}
+                />
+              </div> */}
             </>
           )}
-
           {!editMode && !!buyerParsed && (
             <>
               {Object.keys(buyerParsed).map(key => {
@@ -133,12 +184,12 @@ function App() {
 const Private = (props: any) => {
   const privFormik = useFormik({
     initialValues: initPrivFormValues,
-    validateOnMount: true,
+    // validateOnMount: true,
     validationSchema: yup.object().shape(privateValidationSchema),
     onSubmit: async (values, formikProps) => {
       localStorage.setItem('buyer', JSON.stringify(values));
       props.setEditMode(false);
-      formikProps.resetForm();
+      // formikProps.resetForm();
     }
   });
 
@@ -157,29 +208,47 @@ const Private = (props: any) => {
   }, []);
 
   console.log(privFormik);
+  const [rOnly, setROnly] = useState(true);
+  console.log({ rOnly });
   return (
     <Form
-      onSubmit={e => {
-        e.preventDefault();
-        privFormik.handleSubmit(e);
-      }}
+      noValidate
+      onSubmit={privFormik.handleSubmit}
       ref={el => {
         props.formRef.current = el;
       }}
       onReset={privFormik.handleReset}
+      autoComplete="on"
     >
+      {/* <div className="d-flex justify-content-end">
+        <Button
+          variant="primary"
+          type="reset"
+          onClick={() => {
+            privFormik.resetForm();
+          }}
+        >
+          Test Delete
+        </Button>
+      </div> */}
+
+      {/* <input type="reset" value="Reset" /> */}
       <Form.Group>
         <InputFormik
           label="Email"
           name="email"
           id="email"
-          autoComplete="billing email"
+          autoComplete="email"
           type="email"
           touched={privFormik.touched.email}
           error={privFormik.errors.email}
           onChange={handleOnChange}
           onBlur={privFormik.handleBlur}
-          value={privFormik.values.email}
+          defaultValue={privFormik.values.email}
+          readOnly={rOnly}
+          onFocus={() => {
+            setROnly(false);
+          }}
         />
       </Form.Group>
       <Row>
@@ -189,12 +258,12 @@ const Private = (props: any) => {
               label="Firstname"
               name="firstname"
               id="firstname"
-              autoComplete="billing given-name"
+              autoComplete="given-name"
               touched={privFormik.touched.firstname}
               error={privFormik.errors.firstname}
               onChange={handleOnChange}
               onBlur={privFormik.handleBlur}
-              value={privFormik.values.firstname}
+              defaultValue={privFormik.values.firstname}
             />
           </Form.Group>
         </Col>
@@ -204,12 +273,12 @@ const Private = (props: any) => {
               label="Lastname"
               name="lastname"
               id="lastname"
-              autoComplete="billing family-name"
+              autoComplete="family-name"
               touched={privFormik.touched.lastname}
               error={privFormik.errors.lastname}
               onChange={handleOnChange}
               onBlur={privFormik.handleBlur}
-              value={privFormik.values.lastname}
+              defaultValue={privFormik.values.lastname}
             />
           </Form.Group>
         </Col>
@@ -219,12 +288,12 @@ const Private = (props: any) => {
           label="Address"
           name="address"
           id="address"
-          autoComplete="billing address-line1"
+          autoComplete="street-address"
           touched={privFormik.touched.address}
           error={privFormik.errors.address}
           onChange={handleOnChange}
           onBlur={privFormik.handleBlur}
-          value={privFormik.values.address}
+          defaultValue={privFormik.values.address}
         />
       </Form.Group>
       <Row>
@@ -234,12 +303,12 @@ const Private = (props: any) => {
               label="Postalcode"
               name="postcode"
               id="postcode"
-              autoComplete="billing postal-code"
+              autoComplete="postal-code"
               touched={privFormik.touched.postcode}
               error={privFormik.errors.postcode}
               onChange={handleOnChange}
               onBlur={privFormik.handleBlur}
-              value={privFormik.values.postcode}
+              defaultValue={privFormik.values.postcode}
             />
           </Form.Group>
         </Col>
@@ -249,12 +318,12 @@ const Private = (props: any) => {
               label="City"
               name="city"
               id="city"
-              autoComplete="billing address-level2"
+              autoComplete="address-level2"
               touched={privFormik.touched.city}
               error={privFormik.errors.city}
               onChange={handleOnChange}
               onBlur={privFormik.handleBlur}
-              value={privFormik.values.city}
+              defaultValue={privFormik.values.city}
             />
           </Form.Group>
         </Col>
@@ -264,12 +333,12 @@ const Private = (props: any) => {
           label="Mobile"
           name="tel"
           id="tel"
-          autoComplete="billing tel"
+          autoComplete="tel"
           touched={privFormik.touched.tel}
           error={privFormik.errors.tel}
           onChange={handleOnChange}
           onBlur={privFormik.handleBlur}
-          value={privFormik.values.tel}
+          defaultValue={privFormik.values.tel}
         />
       </Form.Group>
       <div className="d-grid gap-2 mt-3">
