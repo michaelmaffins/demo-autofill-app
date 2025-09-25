@@ -1,4 +1,3 @@
-import React from 'react';
 import { Formik, Form, Field } from 'formik';
 
 export default function AddressForm() {
@@ -19,7 +18,8 @@ export default function AddressForm() {
 
     console.log({ hiddenForm });
     // 3. ✅ Trigger native submission (no page refresh)
-    hiddenForm.submit();
+    if (!hiddenForm) return;
+    hiddenForm.onsubmit();
 
     setSubmitting(false);
   };
@@ -37,11 +37,12 @@ export default function AddressForm() {
           postalCode: ''
         }}
         validate={values => {
+          console.log({ values });
           const errors = {};
-          if (!values.givenName) errors.givenName = 'Required';
-          if (!values.familyName) errors.familyName = 'Required';
-          if (!values.addressLine1) errors.addressLine1 = 'Required';
-          if (!values.postalCode) errors.postalCode = 'Required';
+          // if (!values.givenName) errors.givenName = 'Required';
+          // if (!values.familyName) errors.familyName = 'Required';
+          // if (!values.addressLine1) errors.addressLine1 = 'Required';
+          // if (!values.postalCode) errors.postalCode = 'Required';
           return errors;
         }}
         onSubmit={handleSubmit}

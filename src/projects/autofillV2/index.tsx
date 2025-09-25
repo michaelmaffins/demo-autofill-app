@@ -1,11 +1,8 @@
 import { useFormik } from 'formik';
-import React, { useEffect } from 'react';
-import { Button, Form } from 'react-bootstrap';
-import InputFormik from '../../components/Formik/Input';
-import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Form } from 'react-bootstrap';
 
 const AutofillV2 = () => {
-  const navigate = useNavigate();
   const privFormik = useFormik({
     initialValues: {
       email: '',
@@ -23,9 +20,9 @@ const AutofillV2 = () => {
       console.log(props);
       console.log('submitted');
       // props.submitForm();
-      const form1 = document.getElementById('hidden-form');
+      const form1: any = document.getElementById('hidden-form');
       if (!form1) return;
-      form1.submit();
+      form1.onsubmit();
       // navigate(0);
     }
   });
