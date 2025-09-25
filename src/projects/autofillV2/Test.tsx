@@ -2,25 +2,26 @@ import { Formik, Form, Field } from 'formik';
 
 export default function AddressForm() {
   const handleSubmit = async (values: any, { setSubmitting }: any) => {
-    // 1. ✅ Send via AJAX
-    await fetch('/api/save-address', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(values)
-    });
+    // // 1. ✅ Send via AJAX
+    // await fetch('/api/save-address', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify(values)
+    // });
 
     // 2. ✅ Copy values into hidden form for browser save prompt
     const hiddenForm: any = document.getElementById('hidden-form');
     Object.keys(values).forEach(key => {
+      if (!hiddenForm) return;
       const input = hiddenForm.querySelector(`[name="${key}"]`);
-      if (input) input.value = values[key];
+      if (!input) return;
+      input.value = values[key];
     });
 
     console.log({ hiddenForm });
     // 3. ✅ Trigger native submission (no page refresh)
     if (!hiddenForm) return;
-    hiddenForm.onsubmit();
-
+    hiddenForm.submit();
     setSubmitting(false);
   };
 
@@ -94,6 +95,7 @@ export default function AddressForm() {
 
       {/* Hidden iframe prevents refresh */}
       <iframe
+        allow="yes"
         name="hidden_iframe"
         // style={{ display: 'none' }}
       ></iframe>
